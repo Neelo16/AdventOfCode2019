@@ -7,23 +7,21 @@ struct Instruction
     size::Int
 end
 
-macro defop(val, op, size)
-    quote
-        function $(esc(:fetch))(::Val{$(esc(val))})
-            Instruction($(esc(val)), $(esc(op)), $(esc(size)))
-        end
-    end
+const instructions = Dict{Int, Instruction}()
+
+function defop(val, op, size)
+    instructions[val] = Instruction(val, op, size)
 end
 
-@defop(1, +, 3)
-@defop(2, *, 3)
-@defop(99, :halt, 0)
+defop(1, +, 3)
+defop(2, *, 3)
+defop(99, :halt, 0)
 
-valid_opcodes() = collect(map(m -> m.sig.types[2].parameters[1], methods(fetch, (Val,)).ms))
+valid_opcode(opcode) = opcode ∈ keys(instructions)
 
 function fetch(opcode::Int)
-    if opcode ∈ valid_opcodes()
-        fetch(Val(opcode))
+    if valid_opcode(opcode)
+        instructions[opcode]
     else
         error("Unexpected opcode $(opcode)")
     end

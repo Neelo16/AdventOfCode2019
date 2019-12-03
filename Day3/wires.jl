@@ -66,8 +66,10 @@ for (i, wire) in enumerate(wires)
             if board[x][y] ∉ [0, i]
                 push!(intersections, next)
             end
+            if board[x][y] ≠ i
+                steps[x][y] += stepcounter # Repeated visits don't count
+            end
             board[x][y] = i
-            steps[x][y] += stepcounter
         end
     end
 end

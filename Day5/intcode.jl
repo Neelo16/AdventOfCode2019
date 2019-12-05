@@ -84,8 +84,8 @@ function runprogram!(program::Vector{Int})
         args = program[ip+1:ip+instruction.size]
         argvalues = getargvalues(getparametermodes(program[ip]), args, program)
         if instruction.jump
-            @show newip = instruction.op(argvalues..., ip)
-            @show changed = newip != ip
+            newip = instruction.op(argvalues..., ip)
+            changed = newip != ip
             ip = newip
             changed && continue
         elseif instruction.output

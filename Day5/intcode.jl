@@ -96,10 +96,12 @@ function runprogram!(program::Vector{Int})
     program
 end
 
-println("First half: (enter 1 as input when requested)")
+println("First half: ")
+defop(3, () -> 1, 1)
 inp = parse.(Int, split(read(INPUTFILE, String), ","))
 runprogram!(inp)
 
-println("Second half: (enter 5 as input when requested)")
+println("Second half: ")
+defop(3, () -> 5, 1)
 inp = parse.(Int, split(read(INPUTFILE, String), ","))
 runprogram!(inp)

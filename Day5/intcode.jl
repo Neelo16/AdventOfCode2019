@@ -74,8 +74,6 @@ function fetch(instructioncode::Int)
     end
 end
 
-incr(x) = x+1
-
 function runprogram!(program::Vector{Int})
     ip = 1
     while true

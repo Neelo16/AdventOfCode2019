@@ -116,18 +116,22 @@ function runprogram!(program::Vector{Int})
     program
 end
 
+function creatememory(program::Vector{Int})
+    memory = zeros(Int, length(program)*16)
+    memory[1:length(inp)] = program
+    memory
+end
+
 inp = parse.(Int, split(read(INPUTFILE, String), ","))
 
-let program = zeros(Int, length(inp)*16)
-    program[1:length(inp)] = inp
-    println("First half: ")
+let program = creatememory(inp)
     defop(3, () -> 1, 1)
+    println("First half: ")
     runprogram!(program)
 end
 
-let program = zeros(Int, length(inp)*16)
-    program[1:length(inp)] = inp
-    println("Second half: ")
+let program = creatememory(inp)
     defop(3, () -> 2, 1)
+    println("Second half: ")
     runprogram!(program)
 end

@@ -28,6 +28,7 @@ let image = copy(layers[end])
             end
         end
     end
+    println("Second half:")
     for line in Iterators.partition(image, IMAGE_WIDTH)
         for pixel in line
             print(pixel == 1 ? '▩' : ' ')

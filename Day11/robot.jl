@@ -2,7 +2,6 @@ using DataStructures
 using Intcode
 
 const INPUTFILE = joinpath(@__DIR__, "input.txt")
-
 inp = parse.(Int, split(read(INPUTFILE, String), ","))
 
 const PAINTING = 0
@@ -15,19 +14,15 @@ function paint!(brain::Computer, startcolor=BLACK)
     ship = DefaultDict{Complex,Int}(0)
     direction = -im
     position = 0
-    state = PAINTING
-    ip = 1
     ship[position] = startcolor
     setstate! = (state) -> defop!(brain, OUTPUT_OPCODE, state, 1, writemem=false)
     paintingstate = (output) -> begin
         ship[position] = output
-        state = TURNING
         setstate!(turningstate)
     end
     turningstate =  (output) -> begin
         direction *= output == 1 ? im : -im
         position += direction
-        state = PAINTING
         setstate!(paintingstate)
     end
     initialstate = paintingstate

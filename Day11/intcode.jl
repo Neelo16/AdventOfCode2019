@@ -169,7 +169,7 @@ function display_hull(ship::DefaultDict{Complex,Int})
     for y in min_y:max_y
         for x in min_x:max_x
             pixel = ship[Complex(x, y)]
-            print(pixel == WHITE ? '#' : '.')
+            print(pixel == WHITE ? '▩' : ' ')
         end
         println()
     end

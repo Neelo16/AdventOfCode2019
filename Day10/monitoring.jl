@@ -1,6 +1,6 @@
 const INPUTFILE = joinpath(@__DIR__, "input.txt")
 
-readasteroids(path::AbstractString) = [(x-1, y-1)
+readasteroids(path::AbstractString) = [Complex(y-1, x-1)
     for (y, line) in enumerate(readlines(path))
         for (x, c) in enumerate(line)
             if c == '#'
@@ -9,9 +9,9 @@ readasteroids(path::AbstractString) = [(x-1, y-1)
 function visible(src, points)
     visiblepoints = Set()
     for point in filter(p -> p != src, points)
-        v = point .- src
-        angle = atan(v...)
-        push!(visiblepoints, angle)
+        v = point - src
+        theta = angle(v)
+        push!(visiblepoints, theta)
     end
     length(visiblepoints)
 end
@@ -32,13 +32,13 @@ end
 function laser(src, points)
     targets = Dict()
     for point in filter(p -> p != src, points)
-        v = point .- src
-        angle = π/2 - atan(v...)
-        dist = hypot(v...)
+        v = point - src
+        theta = π - angle(v)
+        dist = abs(v)
         if angle ∈ keys(targets)
-            push!(targets[angle], (dist, point))
+            push!(targets[theta], (dist, point))
         else
-            targets[angle] = [(dist, point)]
+            targets[theta] = [(dist, point)]
         end
     end
     for k in keys(targets)
@@ -57,6 +57,6 @@ end
 let asteroids = readasteroids(INPUTFILE)
     station, targets = getstation(asteroids)
     println("First half: $(targets)")
-    x, y = laser(station, asteroids)[200]
-    println("Second half: $(x * 100 + y)")
+    p = laser(station, asteroids)[200]
+    println("Second half: $(imag(p) * 100 + real(p))")
 end

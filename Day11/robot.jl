@@ -4,9 +4,6 @@ using Intcode
 const INPUTFILE = joinpath(@__DIR__, "input.txt")
 inp = parse.(Int, split(read(INPUTFILE, String), ","))
 
-const PAINTING = 0
-const TURNING = 1
-
 const BLACK = 0
 const WHITE = 1
 

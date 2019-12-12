@@ -48,10 +48,6 @@ function getcycles(moons, axis)
 end
 
 let moons = Moon.(readlines(INPUTFILE))
-    cycles = []
-    for i in 1:3
-        λ = getcycles(moons, i)
-        push!(cycles, λ)
-    end
+    cycles = [getcycles(moons, i) for i in 1:3]
     println("Second half: $(lcm(cycles...))")
 end

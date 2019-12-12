@@ -17,7 +17,7 @@ let mincount = typemax(Int), minlayer = nothing
             minlayer = layer
         end
     end
-    print("First half: $(count(isone, minlayer) * count(istwo, minlayer))")
+    println("First half: $(count(isone, minlayer) * count(istwo, minlayer))")
 end
 
 let image = copy(layers[end])

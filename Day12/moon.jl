@@ -7,9 +7,6 @@ struct Moon
     velocity::Point
 end
 Moon(s::AbstractString) = Moon(parse.(Int, match(r"<x=(-?\d+), y=(-?\d+), z=(-?\d+)>", s).captures), zeros(Int, 3))
-Base.isequal(m::Moon, m2::Moon) = m.position == m2.position && m.velocity == m2.velocity
-Base.:(==)(m::Moon, m2::Moon) = isequal(m, m2)
-Base.hash(moon::Moon, h::UInt) = hash(moon.position, hash(moon.velocity, hash(:Moon, h)))
 Base.copy(m::Moon) = Moon(map(Base.copy, (m.position, m.velocity))...)
 
 gravity(m::Moon, m2::Moon) = sign.(m2.position .- m.position)

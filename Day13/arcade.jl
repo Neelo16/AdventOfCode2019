@@ -85,11 +85,11 @@ function play!(computer::Computer, screen)
             gameover && break
             global needinput = false
         end
-        for (k, v) in screen
-            if isball(v)
-                ball = k
-            elseif ispaddle(v)
-                paddle = k
+        for (coord, tile) in screen
+            if isball(tile)
+                ball = coord
+            elseif ispaddle(tile)
+                paddle = coord
             end
         end
         balldir = sign.(ball .- prevball)

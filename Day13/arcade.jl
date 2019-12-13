@@ -61,7 +61,6 @@ function displayscreen(screen)
     println("Score: $(score[])")
 end
 
-isemptyspace(x) = x == 0
 isblock(x) = x == 2
 ispaddle(x) = x == 3
 isball(x) = x == 4

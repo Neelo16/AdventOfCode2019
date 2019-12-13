@@ -106,17 +106,13 @@ function play!(computer::Computer, screen)
     end
 end
 
-let computer = Computer(inp)
-    screen = initrender(computer)
+let computer = Computer(inp), screen = initrender(computer)
     runprogram!(computer)
     nblocks = count(isblock, values(screen))
     println("First half: $(nblocks)")
 end
 
-let
-    inp[1] = 2
-    computer = Computer(inp)
-    screen = initrender(computer)
+let computer = Computer([2, inp[2:end]...]), screen = initrender(computer)
     play!(computer, screen)
     println("Second half: $(score[])")
 end

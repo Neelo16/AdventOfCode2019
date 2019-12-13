@@ -43,8 +43,8 @@ end
 
 function displayscreen(screen)
     tiles = ['.', '#', 'B', '_', 'O']
-    for y in 1:height(screen)
-        for x in 1:width(screen)
+    for y in 0:height(screen)
+        for x in 0:width(screen)
             print(tiles[screen[x, y]+1])
         end
         println()
@@ -74,13 +74,11 @@ function play!(computer::Computer, screen)
         finally
             unlock(inputlock)
         end
-        for x in 1:width(screen)
-            for y in 1:height(screen)
-                if isball(screen[x, y])
-                    ball = (x, y)
-                elseif ispaddle(screen[x, y])
-                    paddle = (x, y)
-                end
+        for (k, v) in screen
+            if isball(v)
+                ball = k
+            elseif ispaddle(v)
+                paddle = k
             end
         end
         balldir = sign.(ball .- prevball)

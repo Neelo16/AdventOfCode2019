@@ -5,6 +5,17 @@ inp = parse.(Int, split(read(INPUTFILE, String), ","))
 
 const Point = Tuple{Int,Int}
 
+macro safelock(lockvar, body)
+    quote
+        lock($(esc(lockvar)))
+        try
+            $(body)
+        finally
+            unlock($(esc(lockvar)))
+        end
+    end
+end
+
 function initrender(computer::Computer)
     screen = Dict{Point, Int}()
     coord = []
@@ -12,6 +23,7 @@ function initrender(computer::Computer)
     global needinput = false
     global inputlock = Threads.Condition()
     global input = Channel()
+    global gameover = false
     setstate! = (state) -> defop!(computer, OUTPUT_OPCODE, state, 1, writemem=false)
     coord_state = (x) -> begin
         push!(coord, x)
@@ -28,12 +40,9 @@ function initrender(computer::Computer)
     end
     setstate!(coord_state)
     readjoystick = () -> begin
-        lock(inputlock)
-        try
-            needinput = true
+        @safelock inputlock  begin
+            global needinput = true
             notify(inputlock)
-        finally
-            unlock(inputlock)
         end
         take!(input)
     end
@@ -61,18 +70,23 @@ width(screen) = max(getindex.(keys(screen), 1)...)
 height(screen) = max(getindex.(keys(screen), 2)...)
 
 function play!(computer::Computer, screen)
-    game = Threads.@spawn runprogram!(computer)
+    game = Threads.@spawn begin
+        runprogram!(computer)
+        @safelock inputlock begin
+            global gameover = true
+            notify(inputlock)
+        end
+    end
     ball = (0, 0)
     prevball = (0, 0)
     paddle = (0, 0)
     while !istaskdone(game)
-        lock(inputlock)
-        try
-            while !needinput
+        @safelock inputlock begin
+            while !needinput && !gameover
                 wait(inputlock)
             end
-        finally
-            unlock(inputlock)
+            gameover && break
+            global needinput = false
         end
         for (k, v) in screen
             if isball(v)
@@ -91,8 +105,6 @@ function play!(computer::Computer, screen)
         end
         put!(input, paddledir)
     end
-    displayscreen(screen)
-    println("Game Over")
 end
 
 let computer = Computer(inp)
@@ -107,4 +119,5 @@ let
     computer = Computer(inp)
     screen = initrender(computer)
     play!(computer, screen)
+    println("Second half: $(score[])")
 end

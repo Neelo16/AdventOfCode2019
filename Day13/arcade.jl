@@ -76,9 +76,7 @@ function play!(computer::Computer, screen)
             notify(inputlock)
         end
     end
-    ball = (0, 0)
-    prevball = (0, 0)
-    paddle = (0, 0)
+    ball = prevball = paddle = (0, 0)
     while !istaskdone(game)
         @safelock inputlock begin
             while !needinput && !gameover

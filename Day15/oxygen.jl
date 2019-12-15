@@ -88,7 +88,7 @@ function maparea(droid::Droid, display::Bool=false)
 end
 
 function travel(droid::Droid, path::Vector{Int})
-    let out = -1
+    let out = EMPTY
         for d in path
             put!(droid.input, d)
             out = take!(droid.output)

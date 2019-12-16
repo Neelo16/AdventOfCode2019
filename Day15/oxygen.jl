@@ -24,8 +24,8 @@ const UNKNOWN = 3
 
 inversedir(d::Int) = d + (iseven(d) ? -1 : 1)
 
-function displaymaze(labyrinth::DefaultDict{Complex,Int}, path::Vector{Int})
-    coordinates = keys(labyrinth)
+function displaymaze(maze::DefaultDict{Complex,Int}, path::Vector{Int})
+    coordinates = keys(maze)
     min_x, max_x = minimum(real.(coordinates)), maximum(real.(coordinates))
     min_y, max_y = minimum(imag.(coordinates)), maximum(imag.(coordinates))
     sprites = ['#', '.', 'O', ' ']
@@ -33,7 +33,7 @@ function displaymaze(labyrinth::DefaultDict{Complex,Int}, path::Vector{Int})
     dronecoord = pathtocoord(path)
     for y in min_y:max_y
         for x in min_x:max_x
-            pixel = labyrinth[Complex(x, y)]
+            pixel = maze[Complex(x, y)]
             if Complex(x, y) == dronecoord
                 print('D')
             else

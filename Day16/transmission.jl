@@ -32,7 +32,6 @@ function fastclean(signal, nphases)
 end
 
 let offset = fromdigits(inp[1:7]), signal = repeat(inp, 10000)[offset+1:end]
-    @assert offset > 10000 * length(inp) / 2
     # After the halfway point, each digit is the result of summing all subsequent digits
     println("Second half: ", fastclean(signal, 100)[1:8]...)
 end

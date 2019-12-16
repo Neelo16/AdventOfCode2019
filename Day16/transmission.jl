@@ -6,15 +6,13 @@ inp = parse.(Int, collect(chomp(read(INPUTFILE, String))))
 
 const base = [0, 1, 0, -1]
 
-pattern(base, phase, size) = collect(take(drop(cycle(repeat(base, inner=phase)), 1), size))
+pattern(base, element, size) = collect(take(drop(cycle(repeat(base, inner=element)), 1), size))
 
 function cleansignal(signal, nphases, base)
-    output = Vector{Int}(undef, length(signal))
+    output = copy(signal)'
+    pat = hcat([pattern(base, i, length(signal)) for i in 1:length(signal)]...)
     for phase in 1:nphases
-        for i in 1:length(output)
-            output[i] = abs(signal' * pattern(base, i, length(signal))) % 10
-        end
-        signal = copy(output)
+        output = abs.(output * pat) .% 10
     end
     output
 end

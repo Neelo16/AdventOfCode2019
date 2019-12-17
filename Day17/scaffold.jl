@@ -133,6 +133,8 @@ function getpatterns(path::AbstractString, nroutines::Int=3, sizelimit::Int=20)
         patterns = []
         for (name, psize) in zip(pnames, psizes)
             pattern = simplified[1:psize]
+            # Patterns can't mention other patterns
+            pattern = first(split(pattern, Regex("($(join(pnames, '|')))")))
             push!(patterns, name => pattern)
             simplified = clean(replace(simplified, pattern => name))
             simplified == "" && return patterns

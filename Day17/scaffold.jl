@@ -33,9 +33,6 @@ function getview(program)
     view
 end
 
-width(view) = maximum(real.(keys(view)))
-height(view) = maximum(imag.(keys(view)))
-
 function showview(view)
     for y in 0:height(view)
         for x in 0:width(view)
@@ -45,10 +42,13 @@ function showview(view)
     end
 end
 
+width(view) = maximum(real.(keys(view)))
+height(view) = maximum(imag.(keys(view)))
+
 function intersections!(view)
     parameters = 0
     for coord in keys(view)
-        if view[coord] == SCAFFOLD && count(c -> isscaffold(view[c]), around(coord, view)) == 4
+        if isvalidpath(view[coord]) && count(c -> isscaffold(view[c]), around(coord, view)) == 4
             parameters += real(coord) * imag(coord)
             view[coord] = INTERSECTION
         end
@@ -64,6 +64,7 @@ end
 asciirot(c) = c == im ? 'R' : 'L'
 
 function calcpath!(view)
+    intersections!(view)
     robot = first(k for (k, v) in view if isrobot(v))
     path = []
     dir = robotdir(view[robot])
@@ -95,6 +96,32 @@ function calcpath!(view)
     join(path, ',')
 end
 
+function rescuerobots!(program, view)
+    path = calcpath!(view)
+    main, routines = simplify(path)
+    camera = "n"
+    input = []
+    for line in (main, routines..., camera)
+        push!(input, string(line, '\n')...)
+    end
+    reverse!(input)
+    c = Computer(inp)
+    output = -1111
+    defop!(c, OUTPUT_OPCODE, (v) -> output = v, 1, writemem=false)
+    defop!(c, INPUT_OPCODE, () -> Int(pop!(input)), 1)
+    c.memory[1] = 2
+    runprogram!(c)
+    output
+end
+
+function simplify(path::AbstractString)
+    patterns = getpatterns(path)
+    for (name, pattern) in patterns
+        path = replace(path, pattern => name)
+    end
+    path, getindex.(patterns, 2)
+end
+
 function getpatterns(path::AbstractString, nroutines::Int=3, sizelimit::Int=20)
     pnames = string('A':'A'+nroutines...)
     # e.g. regex for 3 routines (A, B and C): ^[ABC,]+
@@ -112,60 +139,6 @@ function getpatterns(path::AbstractString, nroutines::Int=3, sizelimit::Int=20)
         end
     end
     return nothing
-end
-
-function simplify(path::AbstractString)
-    patterns = getpatterns(path)
-    for (name, pattern) in patterns
-        path = replace(path, pattern => name)
-    end
-    path, getindex.(patterns, 2)
-end
-
-function replacepattern(array, pattern, replacement)
-    matches = findmatches(pattern, array)
-    i = 1
-    result = []
-    while i < length(array)
-        if i ∈ matches
-            push!(result, replacement)
-            i += length(pattern)
-        else
-            push!(result, array[i])
-            i += 1
-        end
-    end
-    result
-end
-
-function findmatches(pat, arr)
-    m = []
-    for i in 1:length(arr)-length(pat)+1
-        if arr[i:i+length(pat)-1] == pat
-            push!(m, i)
-        end
-    end
-    m
-end
-
-alldiff(itr) = length(itr) == length(Set(itr))
-
-function rescuerobots!(program, view)
-    path = calcpath!(view)
-    main, routines = simplify(path)
-    camera = "n"
-    input = []
-    for line in (main, routines..., camera)
-        push!(input, string(line, '\n')...)
-    end
-    reverse!(input)
-    c = Computer(inp)
-    output = -1111
-    defop!(c, OUTPUT_OPCODE, (v) -> output = v, 1, writemem=false)
-    defop!(c, INPUT_OPCODE, () -> Int(pop!(input)), 1)
-    c.memory[1] = 2
-    runprogram!(c)
-    output
 end
 
 let view = getview(inp)

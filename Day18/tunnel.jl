@@ -48,23 +48,26 @@ function reachable(tunnel, state::State)
     if state ∈ keys(reachablecache)
         return reachablecache[state]
     end
-    reachablecache[state] = _reachable(tunnel, state.position, state.keyset, 0, DefaultDict{Complex,Bool}(false))
-end
-
-function _reachable(tunnel, pos, keyset, dist, visited)
-    e = tunnel[pos]
-    visited[pos] = true
-    if iswall(e) || (isdoor(e) && keyfor(e) ∉ keyset)
-        return []
-    end
-    if iskey(e) && e ∉ keyset
-        return [e => dist]
-    end
+    queue = Queue{Pair{Complex,Int}}()
+    visited = DefaultDict{Complex,Bool}(false)
+    enqueue!(queue, state.position => 0)
     distances = []
-    for nextpos in filter(c -> c ∈ keys(tunnel) && !visited[c], around(pos))
-        push!(distances, _reachable(tunnel, nextpos, keyset, dist+1, visited))
+    while !isempty(queue)
+        pos, dist = dequeue!(queue)
+        e = tunnel[pos]
+        visited[pos] = true
+        if iswall(e) || (isdoor(e) && keyfor(e) ∉ state.keyset)
+            continue
+        end
+        if iskey(e) && e ∉ state.keyset
+            push!(distances, e => dist)
+            continue
+        end
+        for nextpos in filter(c -> c ∈ keys(tunnel) && !visited[c], around(pos))
+            enqueue!(queue, nextpos => dist+1)
+        end
     end
-    collect(Iterators.flatten(distances))
+    reachablecache[state] = distances
 end
 
 around(pos) = [pos + im^α for α in 0:3]

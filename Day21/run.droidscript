@@ -1,0 +1,18 @@
+NOT C J
+AND E J
+
+NOT A T
+OR T J
+
+NOT E T
+AND H T
+OR T J
+
+AND A T
+AND B T
+AND C T
+NOT T T
+AND T J
+
+AND D J
+RUN

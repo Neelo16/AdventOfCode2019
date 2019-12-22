@@ -47,16 +47,16 @@ deali⁻¹(len, i) = deali(len, i)
 deali⁻¹(len, n, i) = mod(i * invmod(n, len), len)
 
 function getconstants(path::AbstractString, λ)
-    a, b = 1, 0
+    a, b = big"1", big"0"
     for line in reverse(readlines(path))
         if startswith(line, "cut")
-            n = mod(parse(BigInt, last(split(line, ' '))), λ)
+            n = parse(Int, last(split(line, ' ')))
             b = mod(b + n, λ)
         elseif line == "deal into new stack"
             a = mod(-a, λ)
             b = mod(-b - 1, λ)
         elseif startswith(line, "deal with increment")
-            n = mod(parse(BigInt, last(split(line, ' '))), λ)
+            n = parse(Int, last(split(line, ' ')))
             a = mod(invmod(n, λ) * a, λ)
             b = mod(invmod(n, λ) * b, λ)
         else

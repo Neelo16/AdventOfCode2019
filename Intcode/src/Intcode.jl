@@ -1,6 +1,6 @@
 module Intcode
 
-export Computer, defop!,
+export Computer, defop!, definput!, defoutput!,
  ADD_OPCODE,
  MUL_OPCODE,
  INPUT_OPCODE,
@@ -71,6 +71,8 @@ function reset_instructions!(computer::Computer)
     defop!(computer, NEWBASE_OPCODE, :newbase, 1)
 end
 
+defoutput!(computer::Computer, f) = defop!(computer, OUTPUT_OPCODE, f, 1, writemem=false)
+definput!(computer::Computer, f) = defop!(computer, INPUT_OPCODE, f, 1)
 
 getopcode(opcode::Int) = opcode % 100
 valid_opcode(computer::Computer, opcode::Int) = opcode ∈ keys(computer.instructions)
